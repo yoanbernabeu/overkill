@@ -1,0 +1,8 @@
+vich_uploader:
+    db_driver: orm
+    storage: flysystem
+
+    mappings:
+        upload:
+            uri_prefix: /upload
+            upload_destination: aws.storage
