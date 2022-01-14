@@ -39,6 +39,11 @@ class Upload
      */
     private $imageFile;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="uploads")
+     */
+    private $uploadBy;
+
     public function getImageName(): ?string
     {
         return $this->imageName;
@@ -74,6 +79,18 @@ class Upload
     public function getImageFile(): ?File
     {
         return $this->imageFile;
+    }
+
+    public function getUploadBy(): ?User
+    {
+        return $this->uploadBy;
+    }
+
+    public function setUploadBy(?User $uploadBy): self
+    {
+        $this->uploadBy = $uploadBy;
+
+        return $this;
     }
 
 }
