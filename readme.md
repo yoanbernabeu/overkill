@@ -859,3 +859,44 @@ framework:
 ```
 
 * Nous pouvons faire un test est constater que le message est bien émis dans le bus de message RabbitMQ, avec les deux informations qui nous interesse (Le nom de l'upload, et l'adresse Email).
+
+## 10 - De n8n aux Mails via Imaginary
+
+Récupérons les messages RabbitMQ avec n8n, puis demandons une transformation de l'image (un carré par exemple) à Imagiary, et enfin, envoyons le résultat par mail à l'utilisateur.
+
+* Rendons notre Bucket MinIO **Public**
+
+* Ouvrons notre instance de n8n (sur le port 5678)
+
+* Ajoutons un noeud **RabbitMQ Trigger**
+
+    * Créons des crédentials pour notre instance RabbitMQ
+        * Hostname : rabbitmq
+        * Port : 5672
+        * Login/pass: guest
+
+    * Dans Queu/Topic: messages
+
+    * Puis dans les options :
+        * Activer **JSON Parse Body**
+        * Activer **Only content**
+
+* Ajoutons un noeud **HTTP Request**
+    * Method : GET
+    * URL : http://imaginary:9000/smartcrop?height=400&width=400&url=http://minio:9000/fichier/{{$json["upload"]}}
+    * Response format: File
+    * Binary property: image
+
+* Ajoutons un noeud **Send Email**
+    * Créons de crédentials pour notre mail
+        * Host: mailer
+        * Port: 1025
+        * SSL/TLS : False
+    * From: obi@wan.fr
+    * To : {{$json["user"]}}
+    * Subject/Text: Ton image bg !
+    * Attachement: image
+
+* On sauvegarde, et on lance le Workflow !
+
+* TADA !
