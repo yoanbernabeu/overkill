@@ -35,12 +35,14 @@ nodes:
       password: ${fn.password}
     volumes:
        - /var/lib/pgsql/data
+    isSLBAccessEnabled: false
 
   - image: redis:5-alpine
     count: 1
     cloudlets: 8
     nodeGroup: redis
     displayName: Redis
+    isSLBAccessEnabled: false
 
   - image: h2non/imaginary:latest
     count: 1
@@ -51,12 +53,20 @@ nodes:
       - /mnt/data
     env:
       PORT: 9000
+    isSLBAccessEnabled: false
 
   - image: rabbitmq:3.7-management
     count: 1
     cloudlets: 8
     nodeGroup: rabbitmq
     displayName: RabbitMQ
+    isSLBAccessEnabled: false
+
+  - image: n8nio/n8n
+    count: 1
+    cloudlets: 8
+    nodeGroup: n8n
+    displayName: N8N
 
   - image: minio/minio
     count: 1
