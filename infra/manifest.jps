@@ -26,7 +26,7 @@ nodes:
     volumes:
       - /var/www
     
-  - nodeType: postgresql12
+  - nodeType: postgresql
     count: 1
     cloudlets: 8
     nodeGroup: sqldb
