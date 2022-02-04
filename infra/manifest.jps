@@ -1,0 +1,130 @@
+type: install
+name: OverKill
+id: Overkill
+categories: ["apps/dev-and-admin-tools"]
+logo: https://symfony.com/logos/symfony_black_03.png
+homepage: https://github.com/yoanbernabeu/overkill
+baseUrl: https://raw.githubusercontent.com/yoanbernabeu/overkill/main/
+
+description: |
+  Fichier d'Infrastructure As Code pour le projet "OverKill"
+  
+ssl: true
+
+nodes:
+  - nodeType: nginx
+    nodeGroup: bl
+    count: 1
+    cloudlets: 8
+    displayName: LoadBalancer
+    
+  - image: php:8.1.2-apache
+    count: 1
+    cloudlets: 8
+    nodeGroup: cp
+    displayName: FrontWeb
+    volumes:
+      - /var/www
+    
+  - nodeType: postgresql12
+    count: 1
+    cloudlets: 8
+    nodeGroup: sqldb
+    displayName: SQLDB
+    env:
+      password: ${fn.password}
+    volumes:
+       - /var/lib/pgsql/data
+
+  - image: redis:5-alpine
+    count: 1
+    cloudlets: 8
+    nodeGroup: redis
+    displayName: Redis
+
+  - image: h2non/imaginary:latest
+    count: 1
+    cloudlets: 8
+    nodeGroup: imaginary
+    displayName: Imaginary
+    volumes:
+      - /mnt/data
+    env:
+      PORT: 9000
+
+  - image: rabbitmq:3.7-management
+    count: 1
+    cloudlets: 8
+    nodeGroup: rabbitmq
+    displayName: RabbitMQ
+
+  - image: minio/minio
+    count: 1
+    cloudlets: 8
+    nodeGroup: minio
+    displayName: Minio
+    volumes:
+      - /data
+    env:
+      MINIO_ROOT_USER: access1234
+      MINIO_ROOT_PASSWORD: secret1234
+
+  - image: schickling/mailcatcher
+    count: 1
+    cloudlets: 8
+    nodeGroup: mailcatcher
+    displayName: MailCatcher
+
+onInstall:
+  - composer
+  - symfonycli
+  - git
+  - apacheConf
+  - npm
+  - php
+
+actions:
+  composer:
+    cmd[cp]: |-
+      curl -sS https://getcomposer.org/installer | php
+      mv composer.phar /usr/bin/composer
+      chmod +x /usr/bin/composer
+    user: root
+    
+  symfonycli:
+    cmd[cp]: |-
+      echo 'deb [trusted=yes] https://repo.symfony.com/apt/ /' | tee /etc/apt/sources.list.d/symfony-cli.list
+      apt update
+      apt install symfony-cli
+    user: root
+  
+  git:
+    cmd[cp]: |-
+      apt-get install -yqq --no-install-recommends git
+      
+  apacheConf:
+    cmd[cp]: |-
+      cd /var/www
+      mkdir public
+      cd /var/www/public
+      touch index.php
+      cd /etc/apache2/sites-enabled
+      rm 000-default.conf
+      wget https://raw.githubusercontent.com/yoanbernabeu/Symfony-Jelastic/main/config/apache.conf
+      apachectl restart
+
+  npm:
+    cmd[cp]: |-
+      apt install nodejs npm
+
+  php:
+    cmd[cp]: |-
+        curl -sSLf \
+        -o /usr/local/bin/install-php-extensions \
+        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+        chmod +x /usr/local/bin/install-php-extensions && \
+        install-php-extensions intl pgsql pdo pdo_pgsql
+
+
+success: |
+  Your OverKill environment is ready to go!

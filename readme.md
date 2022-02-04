@@ -900,3 +900,14 @@ Récupérons les messages RabbitMQ avec n8n, puis demandons une transformation d
 * On sauvegarde, et on lance le Workflow !
 
 * TADA !
+
+## 11 Préparons l'Infra As Code pour Jelastic
+
+Dans le cadre de ce projet (à vocation pédagogique uniquement), nous allons déployer l'application avec l'hébergement [Hidora](https://hidora.io) qui utilise la platforme [Jelastic](https://jelastic.com/).
+
+* A la racine de notre projet créons un repertoire ```infra```.
+    * Créons un fichier ```manifest.jps```
+
+```jps
+
+```
