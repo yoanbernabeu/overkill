@@ -68,17 +68,6 @@ nodes:
     nodeGroup: n8n
     displayName: N8N
 
-  - image: minio/minio
-    count: 1
-    cloudlets: 8
-    nodeGroup: minio
-    displayName: Minio
-    volumes:
-      - /data
-    env:
-      MINIO_ROOT_USER: access1234
-      MINIO_ROOT_PASSWORD: secret1234
-
   - image: schickling/mailcatcher
     count: 1
     cloudlets: 8
